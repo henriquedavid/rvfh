@@ -88,9 +88,7 @@ public class Roteamento {
 				System.out.println("EM ESPERA");
 			}
 		}
-	}
-	
-	
+	}	
 	
 	
 }

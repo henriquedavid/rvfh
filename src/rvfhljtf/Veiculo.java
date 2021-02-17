@@ -55,16 +55,14 @@ public class Veiculo {
 			System.out.println("["+c.getCode()+"] - " + c.toString());
 		}
 	}
+	
+	public void obterMenorCaminho() {
+		
+	}
 
 	@Override
 	public String toString() {
 		return "Veiculo [volume=" + volume + ", custo=" + custo + ", tipo=" + tipo + "]";
 	}
-	
-	
-	
-	
-	
-	
 	
 }

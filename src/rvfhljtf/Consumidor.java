@@ -67,8 +67,6 @@ public class Consumidor implements Comparator<Consumidor>{
 		this.distancia_ao_estab = distancia_ao_estab;
 	}
 	
-	
-	
 	public int getCode() {
 		return code;
 	}
