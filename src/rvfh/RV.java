@@ -113,7 +113,17 @@ public class RV {
 				} else if(i == 0 && j == 0) {
 					l_.add(0);
 				} else if(j == 0 && i != 0){
-					l_.add(1);
+					boolean possivel = false;
+					for(int v = 0; v < vehicles.size(); v++) {
+						if(vehicles.get(v).getVolume() >= consumers.get(i).getDemanda()) {
+							possivel = true;
+						}
+					}
+					if(possivel)
+						l_.add(1);
+					else {
+						l_.add(0);
+					}
 				} else {
 					l_.add(0);
 				}
@@ -131,6 +141,7 @@ public class RV {
 			}
 			adjacency_matrix.add(l_);
 		}
+//		print();
 	}
 	
 	public int demanda1to1(Integer start, Integer end) {
@@ -149,42 +160,28 @@ public class RV {
 	}
 	
 	public void generate() {
-		// Iniciando a matriz
-		List<Integer> vehicleUsed = new ArrayList<Integer>();
-//		for(int i = 0; i < vehicles.size(); i++) {
-////			List<Integer> v_ = new ArrayList<Integer>();
-////			for(int j = 0; j < consumers.size(); j++) {
-////				v_.add(0);
-////			}
-//			vehicleUsed.add(0);
-//		}
-		
 		boolean combineDone = true;
-//		int usingVehicle = 0;
+		int usingVehicle = 4;
 		while(combineDone) {
 			combineDone = false;
-			for(int usingVehicle = 0; usingVehicle < vehicles.size(); usingVehicle++) {
 			for(int i = 1; i < consumers.size(); i++) {
-				for(int j = 1; j < consumers.size(); j++) {
+				for(int j = 0; j < consumers.size(); j++) {
 					int v_vehicle = vehicles.get(usingVehicle).getVolume();
 					int v_demanda = calculateTotalDemanda(i) + calculateTotalDemanda(j);
-					
-//					if(v_vehicle < v_demanda) {
-//						System.out.println(v_vehicle + ">" + v_demanda);	
-//					}
-					if(isEndPoint(i) && isEndPoint(j) && !vehicleUsed.contains(i) && i != j && isUnique(i) && isUnique(j) &&
+					System.out.println(i+" - " +j);
+					if(isEndPoint(i) && isEndPoint(j) 
+							&& i != j && i != 0 &&
 							v_vehicle > v_demanda) {
 						System.out.println("ENTROU");
-						changePositions(j, 0, 0);
-						changePositions(j, i, 1);
-						vehicleUsed.add(i);
+						changePositions(i, 0, 0);
+						changePositions(i, j, 1);
 						combineDone = true;
-						System.out.println();
+						i = 0;
 						j = 0;
-						print();
 					}
+					
+					print();
 				}
-			}
 			}
 		}
 	}
@@ -221,21 +218,27 @@ public class RV {
 		}
 	}
 	
-	public int calculateTotalDemanda(Integer end) {
-		int total = 0;
-		// Parte do depósito
-		int atual = end;
-		int proximo = -1;
-		// Percorre toda os elementos
-		for(int i = 0; i < adjacency_matrix.size() && atual != 0; i++) {
-			if(adjacency_matrix.get(atual).get(i) == 1 ) {
-				total += consumers.get(atual).getDemanda();
-				atual = i;
-				i = -1;
-			}
+	public int calculateTotalDemanda(Integer partida) {
+
+		int total = consumers.get(partida).getDemanda();
+		int next = hasNext(partida);
+		
+		while(next != 0) {
+			total += consumers.get(next).getDemanda();
+			next = hasNext(next);
 		}
 		
 		return total;
+	}
+	
+	public int hasNext(int pos) {
+		int next = 0;
+		for(int i = 1; i < adjacency_matrix.size() && pos < adjacency_matrix.size(); ++i) {
+			if(adjacency_matrix.get(i).get(pos) == 1) {
+				return i;
+			}
+		}
+		return next;
 	}
 	
 	public boolean isEndPoint(int posicao) {

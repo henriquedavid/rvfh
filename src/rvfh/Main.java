@@ -7,5 +7,7 @@ public class Main {
 			rv.readFile();
 			rv.generate();
 			rv.print();
+			
+			System.out.println("V = "+rv.calculateTotalDemanda(4));
 	}
 }
