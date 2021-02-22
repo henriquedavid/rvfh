@@ -40,6 +40,10 @@ public class Main {
 		roteamento.addConsumidor(cc7);
 		roteamento.addConsumidor(cc8);
 		
+		// Quantos carros
+		// Caracteristicas(Capacidade)
+		// Peso das arestas
+		
 		roteamento.ordenarPorTempo();
 		roteamento.ordenarVeiculosPorCapacidade();
 		roteamento.distribuirRotas();
