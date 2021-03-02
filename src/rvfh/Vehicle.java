@@ -5,6 +5,7 @@ public class Vehicle {
 	private int type;
 	private int volume;
 	private int fixed_cost;
+	private int qnt;
 	
 	public Vehicle() {
 		super();
@@ -15,6 +16,24 @@ public class Vehicle {
 		this.type = type;
 		this.volume = volume;
 		this.fixed_cost = fixed_cust;
+		this.qnt = 10;
+	}
+	
+	
+	public Vehicle(int id, int type, int volume, int fixed_cost, int qnt) {
+		super();
+		this.id = id;
+		this.type = type;
+		this.volume = volume;
+		this.fixed_cost = fixed_cost;
+		this.qnt = qnt;
+	}
+	
+	public int getQnt() {
+		return qnt;
+	}
+	public void setQnt(int qnt) {
+		this.qnt = qnt;
 	}
 	public int getId() {
 		return id;

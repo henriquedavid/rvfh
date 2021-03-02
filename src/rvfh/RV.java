@@ -168,7 +168,8 @@ public class RV {
 			for(int i = 1; i < consumers.size(); i++) {
 				for(int j = 1; j < consumers.size(); j++) {
 					int v_demanda = calculateTotalDemanda(i) + calculateTotalDemanda(j);
-					int v_vehicle = vehicles.get(findMinVehicle(v_demanda, false)).getVolume();
+					int veh_ = findMinVehicle(v_demanda, false);
+					int v_vehicle = vehicles.get(veh_).getVolume();
 					if(isEndPoint(i) && isEndPoint(j) 
 							&& i != j && cs_saving(i, j) >= 0 && v_demanda < v_vehicle) {
 						
@@ -219,11 +220,11 @@ public class RV {
 	}
 	
 	public int findMinVehicle(int totalDemanda, boolean isFixedCust) {
-		int menor = 0;
-		for(int i = 1; i < vehicles.size(); i++) {
+		int menor = vehicles.size()-1;
+		for(int i = 0; i < vehicles.size(); i++) {
 			if(totalDemanda <= vehicles.get(i).getVolume()) {
-				if(vehicles.get(i).getFixed_cust() > vehicles.get(menor).getFixed_cust()) {
-					menor = i;	
+				if(vehicles.get(i).getFixed_cust() < vehicles.get(menor).getFixed_cust()) {
+					menor = i;
 				}
 			}
 		}
