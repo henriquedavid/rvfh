@@ -2,6 +2,8 @@ package rvfh;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -156,31 +158,24 @@ public class RV {
 		List<Integer> c_ = adjacency_matrix.get(c);
 		c_.set(a, v);
 		adjacency_matrix.set(c, c_);
-		print();
+//		print();
 	}
 	
 	public void generate() {
 		boolean combineDone = true;
-		int usingVehicle = 4;
 		while(combineDone) {
 			combineDone = false;
 			for(int i = 1; i < consumers.size(); i++) {
-				for(int j = 0; j < consumers.size(); j++) {
-					int v_vehicle = vehicles.get(usingVehicle).getVolume();
+				for(int j = 1; j < consumers.size(); j++) {
 					int v_demanda = calculateTotalDemanda(i) + calculateTotalDemanda(j);
-					System.out.println(i+" - " +j);
+					int v_vehicle = vehicles.get(findMinVehicle(v_demanda, false)).getVolume();
 					if(isEndPoint(i) && isEndPoint(j) 
-							&& i != j && i != 0 &&
-							v_vehicle > v_demanda) {
-						System.out.println("ENTROU");
+							&& i != j && cs_saving(i, j) >= 0 && v_demanda < v_vehicle) {
+						
+						combineDone = true;
 						changePositions(i, 0, 0);
 						changePositions(i, j, 1);
-						combineDone = true;
-						i = 0;
-						j = 0;
 					}
-					
-					print();
 				}
 			}
 		}
@@ -197,27 +192,6 @@ public class RV {
 		return qnt < 2;
 	}
 	
-	public void ordenarVeiculosPorCapacidade() {
-		List<Vehicle> veiculos = vehicles;
-		Queue<Vehicle> veiculos_= new LinkedList();
-		
-		while(!veiculos.isEmpty()) {
-			Vehicle maiorCapacidade = veiculos.get(0);
-			for(int i = 1; i < veiculos.size(); i++) {
-				Vehicle c_ = veiculos.get(i);
-				if(maiorCapacidade.getVolume() > c_.getVolume())
-					maiorCapacidade = c_;
-			}
-			veiculos_.add(maiorCapacidade);
-			veiculos.remove(maiorCapacidade);
-		}
-		
-		for(Vehicle e: veiculos_) {
-			veiculos.add(e);
-			//System.out.println("BEGIN = " + e.getDisponivel() + " -> " + e.getDisponivel_ate() + " | T = " + (e.getDisponivel_ate().getTime() - e.getDisponivel().getTime()) + " | VOLUME = " + e.getVolume());
-		}
-	}
-	
 	public int calculateTotalDemanda(Integer partida) {
 
 		int total = consumers.get(partida).getDemanda();
@@ -227,6 +201,50 @@ public class RV {
 			total += consumers.get(next).getDemanda();
 			next = hasNext(next);
 		}
+		
+		return total;
+	}
+	
+	public int cw_saving(int i, int j) {
+		int total = calculateDistanciaTotal(i) + calculateDistanciaTotal(j) - distance(consumers.get(i), consumers.get(j));
+		return total;
+	}
+	
+	public int cs_saving(int i, int j) {
+		int sij = cw_saving(i,j) 
+				+ findMinVehicle(calculateTotalDemanda(i), true) 
+				+ findMinVehicle(calculateTotalDemanda(j), true)
+				- findMinVehicle(calculateTotalDemanda(i) + calculateTotalDemanda(j), true);
+		return sij;
+	}
+	
+	public int findMinVehicle(int totalDemanda, boolean isFixedCust) {
+		int menor = 0;
+		for(int i = 1; i < vehicles.size(); i++) {
+			if(totalDemanda <= vehicles.get(i).getVolume()) {
+				if(vehicles.get(i).getFixed_cust() > vehicles.get(menor).getFixed_cust()) {
+					menor = i;	
+				}
+			}
+		}
+		if(isFixedCust)
+			return vehicles.get(menor).getFixed_cust();
+		else
+			return menor;
+	}
+	
+	public int calculateDistanciaTotal(Integer partida) {
+
+		int total = distance(consumers.get(0), consumers.get(partida));
+		int next = hasNext(partida);
+		
+		while(next != 0) {
+			total += distance(consumers.get(next), consumers.get(partida));
+			partida = next;
+			next = hasNext(next);
+		}
+		
+		total += distance(consumers.get(partida), consumers.get(partida));
 		
 		return total;
 	}
@@ -267,7 +285,30 @@ public class RV {
 		
 	}
 	
-	
+	public void writeFile() {
+		try {
+			FileWriter fw = new FileWriter("/home/henrique/Documents/ufrn/paa/file.txt");
+			
+			for(int i = 0; i < consumers.size(); i++) {
+				fw.write("("+i+")");
+				for(int j = 0 ; j < consumers.size(); j++) {
+					fw.write(adjacency_matrix.get(i).get(j) + " ");
+				}
+				fw.write("\n");
+			}
+			
+			for(int i = 0; i < consumers.size();i++) {
+				if(adjacency_matrix.get(i).get(0) == 1)
+					fw.write(calculateTotalDemanda(i) + "\n");
+			}
+			
+			fw.close();
+			System.out.println("Verifique o arquivo de saída.");
+		} catch(IOException e) {
+			System.out.println("Ocorreu um erro ao escrever o arquivo.");
+			e.printStackTrace();
+		}
+	}
 	
 
 }
