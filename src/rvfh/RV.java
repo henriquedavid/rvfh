@@ -32,9 +32,9 @@ public class RV {
 		return (Math.abs(c1.getX() - c2.getX()) + Math.abs(c1.getY() - c2.getY()));
 	}
 
-	public void readFile() {
+	public void readFile(String file_name) {
 		try {
-			File file_ = new File("/home/henrique/Documents/ufrn/paa/caso_20");
+			File file_ = new File(file_name);
 			Scanner reader_ = new Scanner(file_);
 			
 			int consumer = 0;
@@ -84,6 +84,13 @@ public class RV {
 									break;
 								case 2:
 									vehicleObj.setFixed_cust(v_);
+									vehicles.add(vehicleObj);
+									vehicleObj = new Vehicle();
+									step = 0;
+//									step = 3;
+									break;
+								case 3:
+									vehicleObj.setQnt(v_);
 									vehicles.add(vehicleObj);
 									vehicleObj = new Vehicle();
 									step = 0;
@@ -168,17 +175,26 @@ public class RV {
 			for(int i = 1; i < consumers.size(); i++) {
 				for(int j = 1; j < consumers.size(); j++) {
 					int v_demanda = calculateTotalDemanda(i) + calculateTotalDemanda(j);
-					int veh_ = findMinVehicle(v_demanda, false);
-					int v_vehicle = vehicles.get(veh_).getVolume();
-					if(isEndPoint(i) && isEndPoint(j) 
+					int veh_menor = findMinVehicle(v_demanda, false);
+					int v_vehicle = vehicles.get(veh_menor).getVolume();
+					if(isEndPoint(i) && isEndPoint(j) //&& vehicles.get(veh_menor).possuiQntDisponivel(i, j)
 							&& i != j && cs_saving(i, j) >= 0 && v_demanda < v_vehicle) {
 						
 						combineDone = true;
+//						liberarConsumidorDoVeiculo(i);
+//						liberarConsumidorDoVeiculo(j);
+//						vehicles.get(veh_menor).addConsumerToVehicle(i);
 						changePositions(i, 0, 0);
 						changePositions(i, j, 1);
 					}
 				}
 			}
+		}
+	}
+	
+	public void liberarConsumidorDoVeiculo(Integer posicao) {
+		for(int i = 0; i < vehicles.size(); i++) {
+			vehicles.get(i).removeConsumidor(posicao);
 		}
 	}
 	
@@ -204,6 +220,19 @@ public class RV {
 		}
 		
 		return total;
+	}
+	
+	public void printRota(Integer partida) {
+
+		int total = consumers.get(partida).getDemanda();
+		System.out.print(partida + " ");
+		int next = hasNext(partida);
+		
+		while(next != 0) {
+			System.out.print(next + " ");;
+			next = hasNext(next);
+		}
+		System.out.println();
 	}
 	
 	public int cw_saving(int i, int j) {
@@ -266,29 +295,32 @@ public class RV {
 	
 	
 	public void print() {
-		System.out.println("");
-		for(int i = 0; i < consumers.size(); i++) {
-			System.out.print("("+i+")");
-			for(int j = 0 ; j < consumers.size(); j++) {
-				System.out.print(adjacency_matrix.get(i).get(j) + " ");
-			}
-			System.out.println();
-		}
+		System.out.println("Rotas:");
+//		for(int i = 0; i < consumers.size(); i++) {
+//			System.out.print("("+i+")");
+//			for(int j = 0 ; j < consumers.size(); j++) {
+//				System.out.print(adjacency_matrix.get(i).get(j) + " ");
+//			}
+//			System.out.println();
+//		}
 		
 		for(int i = 0; i < consumers.size();i++) {
 			if(adjacency_matrix.get(i).get(0) == 1)
-				System.out.println(calculateTotalDemanda(i));
+			{
+				printRota(i);
+			}
+//				System.out.println(calculateTotalDemanda(i));
 		}
 		
-		for(int i = 0; i < vehicles.size(); i++) {
-			System.out.println(vehicles.get(i));
-		}
+//		for(int i = 0; i < vehicles.size(); i++) {
+//			System.out.println(vehicles.get(i));
+//		}
 		
 	}
 	
-	public void writeFile() {
+	public void writeFile(String saida) {
 		try {
-			FileWriter fw = new FileWriter("/home/henrique/Documents/ufrn/paa/file.txt");
+			FileWriter fw = new FileWriter(saida);
 			
 			for(int i = 0; i < consumers.size(); i++) {
 				fw.write("("+i+")");

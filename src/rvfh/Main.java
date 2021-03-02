@@ -1,5 +1,7 @@
 package rvfh;
 
+import java.util.Scanner;
+
 public class Main {
 	public static void main(String[] args) {
 			RV rv = new RV();
@@ -9,12 +11,14 @@ public class Main {
 //			Consumer c2 = new Consumer(2, 1, 0, 100);
 //			
 //			System.out.println(rv.distance(c, c2));
-//			
-			rv.readFile();
+			Scanner s_ = new Scanner(System.in);
+			System.out.println("Insira o caminho para o arquivo junto com o nome do arquivo: ");
+			rv.readFile(s_.nextLine());
 			rv.generate();
 			rv.print();
-//			
-//			System.out.println("V = "+rv.calculateTotalDemanda(4));
-//			rv.writeFile();
+			
+			Scanner s_out = new Scanner(System.in);
+			System.out.println("Insira o nome do arquivo de saida: ");
+			rv.writeFile(s_out.nextLine());
 	}
 }
