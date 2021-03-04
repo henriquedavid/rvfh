@@ -177,7 +177,7 @@ public class RV {
 					int v_demanda = calculateTotalDemanda(i) + calculateTotalDemanda(j);
 					int veh_menor = findMinVehicle(v_demanda, false);
 					int v_vehicle = vehicles.get(veh_menor).getVolume();
-					if(isEndPoint(i) && isEndPoint(j) //&& vehicles.get(veh_menor).possuiQntDisponivel(i, j)
+					if(isEndPoint(i) && isEndPoint(j) && isEnable(j) //&& vehicles.get(veh_menor).possuiQntDisponivel(i, j)
 							&& i != j && cs_saving(i, j) >= 0 && v_demanda < v_vehicle) {
 						
 						combineDone = true;
@@ -190,6 +190,14 @@ public class RV {
 				}
 			}
 		}
+	}
+	
+	public boolean isEnable(int j) {
+		for(int q = 1; q < adjacency_matrix.size(); q++) {
+			if(adjacency_matrix.get(q).get(j) == 1)
+				return false;
+		}
+		return true;
 	}
 	
 	public void liberarConsumidorDoVeiculo(Integer posicao) {
@@ -295,15 +303,17 @@ public class RV {
 	
 	
 	public void print() {
-		System.out.println("Rotas:");
-//		for(int i = 0; i < consumers.size(); i++) {
-//			System.out.print("("+i+")");
-//			for(int j = 0 ; j < consumers.size(); j++) {
-//				System.out.print(adjacency_matrix.get(i).get(j) + " ");
-//			}
-//			System.out.println();
-//		}
+		System.out.println("ROTEAMENTO:");
+		System.out.println("Mapa de rotas:");
+		for(int i = 0; i < consumers.size(); i++) {
+			System.out.print("("+i+")");
+			for(int j = 0 ; j < consumers.size(); j++) {
+				System.out.print(adjacency_matrix.get(i).get(j) + " ");
+			}
+			System.out.println();
+		}
 		
+		System.out.println("Rotas:");
 		for(int i = 0; i < consumers.size();i++) {
 			if(adjacency_matrix.get(i).get(0) == 1)
 			{
